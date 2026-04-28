@@ -1,7 +1,9 @@
 node_modules/
 *.js
-*.js.map
+!main.js
 !esbuild.config.mjs
+*.js.map
 dist/
 .env
 .DS_Store
+.claude/

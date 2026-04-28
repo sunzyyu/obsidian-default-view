@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-default-view",
+  "name": "default-view-mode",
   "version": "1.0.0",
   "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
   "main": "main.js",

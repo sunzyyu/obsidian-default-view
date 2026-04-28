@@ -23,20 +23,20 @@ view-mode: reading
 
 | Command | Description |
 |---------|-------------|
-| **Set Reading View as Default** | Adds `view-mode: reading` to the active note's frontmatter |
-| **Set Editing View as Default** | Adds `view-mode: editing` to the active note's frontmatter |
-| **Clear Default View** | Removes the `view-mode` key from the active note's frontmatter |
+| **Set reading view as default** | Adds `view-mode: reading` to the active note's frontmatter |
+| **Set editing view as default** | Adds `view-mode: editing` to the active note's frontmatter |
+| **Clear default view** | Removes the `view-mode` key from the active note's frontmatter |
 
 ## Installation
 
-### Community Plugin Gallery (Recommended)
+### Community Plugin Gallery
 
-Available in the Obsidian Community Plugin gallery.
+Once accepted, this plugin will be available in the Obsidian Community Plugin gallery.
 
 ### Manual Installation
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release
-2. Copy them into `{vault}/.obsidian/plugins/obsidian-default-view/`
+2. Copy them into `{vault}/.obsidian/plugins/default-view-mode/`
 3. Reload Obsidian and enable the plugin under **Settings → Community Plugins**
 
 ## Compatibility

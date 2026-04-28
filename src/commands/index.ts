@@ -5,19 +5,19 @@ import { ViewModeService } from '../services/ViewModeService';
 export function registerCommands(plugin: Plugin, viewModeService: ViewModeService): void {
   plugin.addCommand({
     id: 'set-reading-view-default',
-    name: 'Set Reading View as Default',
+    name: 'Set reading view as default',
     callback: () => viewModeService.setCurrentFileMode(ViewMode.Reading),
   });
 
   plugin.addCommand({
     id: 'set-editing-view-default',
-    name: 'Set Editing View as Default',
+    name: 'Set editing view as default',
     callback: () => viewModeService.setCurrentFileMode(ViewMode.Editing),
   });
 
   plugin.addCommand({
     id: 'clear-default-view',
-    name: 'Clear Default View',
+    name: 'Clear default view',
     callback: () => viewModeService.clearCurrentFileMode(),
   });
 }

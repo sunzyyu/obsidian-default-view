@@ -1,4 +1,4 @@
-export const PLUGIN_ID = 'obsidian-default-view';
+export const PLUGIN_ID = 'default-view-mode';
 
 export const FRONTMATTER_KEY = 'view-mode';
 
