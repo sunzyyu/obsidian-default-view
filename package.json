@@ -1,6 +1,6 @@
 {
   "name": "default-view-mode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
   "main": "main.js",
   "scripts": {
