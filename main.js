@@ -88,10 +88,7 @@ var ViewModeService = class {
     if (this.processingPaths.has(file.path)) {
       return;
     }
-    const desiredMode = this.frontMatterService.read(file);
-    if (desiredMode === null) {
-      return;
-    }
+    const desiredMode = this.frontMatterService.read(file) ?? this.getObsidianDefaultView();
     const leaf = this.getActiveMarkdownLeaf();
     if (!leaf) {
       return;
@@ -147,6 +144,10 @@ var ViewModeService = class {
   getActiveMarkdownLeaf() {
     const view = this.app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
     return view?.leaf ?? null;
+  }
+  getObsidianDefaultView() {
+    const defaultMode = this.app.vault.getConfig("defaultViewMode");
+    return defaultMode === "preview" ? "reading" /* Reading */ : "editing" /* Editing */;
   }
 };
 

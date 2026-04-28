@@ -1,7 +1,7 @@
 {
     "id": "default-view-mode",
     "name": "Default View Mode",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "minAppVersion": "1.12.0",
     "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
     "author": "sunzyyu",

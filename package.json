@@ -1,23 +1,23 @@
 {
-  "name": "default-view-mode",
-  "version": "1.0.1",
-  "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
-  "main": "main.js",
-  "scripts": {
-    "build": "node esbuild.config.mjs production",
-    "dev": "node esbuild.config.mjs"
-  },
-  "keywords": [
-    "obsidian",
-    "obsidian-plugin",
-    "view-mode",
-    "reading-view"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "esbuild": "^0.25.0",
-    "obsidian": "1.12.3",
-    "typescript": "~6.0.2"
-  }
+    "name": "default-view-mode",
+    "version": "1.0.2",
+    "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
+    "main": "main.js",
+    "scripts": {
+        "build": "node esbuild.config.mjs production",
+        "dev": "node esbuild.config.mjs"
+    },
+    "keywords": [
+        "obsidian",
+        "obsidian-plugin",
+        "view-mode",
+        "reading-view"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "esbuild": "^0.25.0",
+        "obsidian": "1.12.3",
+        "typescript": "~6.0.2"
+    }
 }

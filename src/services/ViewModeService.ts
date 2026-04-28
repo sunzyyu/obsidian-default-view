@@ -2,6 +2,10 @@ import { type App, type TFile, type WorkspaceLeaf, MarkdownView } from 'obsidian
 import { VIEW_STATE_TYPE, ViewMode, PROCESSING_CLEANUP_DELAY_MS, VIEW_SWITCH_DELAY_MS } from '../constants';
 import { FrontMatterService } from './FrontMatterService';
 
+interface VaultConfig {
+  getConfig(key: string): unknown;
+}
+
 export class ViewModeService {
   private readonly processingPaths: Set<string> = new Set();
   private readonly app: App;
@@ -21,10 +25,7 @@ export class ViewModeService {
       return;
     }
 
-    const desiredMode = this.frontMatterService.read(file);
-    if (desiredMode === null) {
-      return;
-    }
+    const desiredMode = this.frontMatterService.read(file) ?? this.getObsidianDefaultView();
 
     const leaf = this.getActiveMarkdownLeaf();
     if (!leaf) {
@@ -92,5 +93,10 @@ export class ViewModeService {
   private getActiveMarkdownLeaf(): WorkspaceLeaf | null {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     return view?.leaf ?? null;
+  }
+
+  private getObsidianDefaultView(): ViewMode {
+    const defaultMode = (this.app.vault as unknown as VaultConfig).getConfig('defaultViewMode');
+    return defaultMode === 'preview' ? ViewMode.Reading : ViewMode.Editing;
   }
 }
