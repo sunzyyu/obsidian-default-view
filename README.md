@@ -1,6 +1,6 @@
 # Default View Mode
 
-Set a default view mode — reading or editing — for each note individually via frontmatter. Open your homepage in reading view, your daily notes in editing view, and everything else however you like.
+Set a default view mode — `read` or `edit` — for each note individually via frontmatter. Open your homepage in read view, your daily notes in edit view, and everything else however you like.
 
 ## Features
 
@@ -15,7 +15,7 @@ The plugin reads a `view-mode` key from each note's YAML frontmatter. When you o
 
 ```yaml
 ---
-view-mode: reading
+view-mode: read
 ---
 ```
 
@@ -23,9 +23,9 @@ view-mode: reading
 
 | Command | Description |
 |---------|-------------|
-| **Set reading view as default** | Adds `view-mode: reading` to the active note's frontmatter |
-| **Set editing view as default** | Adds `view-mode: editing` to the active note's frontmatter |
-| **Clear default view** | Removes the `view-mode` key from the active note's frontmatter |
+| **Set view-mode: read** | Adds `view-mode: read` to the active note's frontmatter |
+| **Set view-mode: edit** | Adds `view-mode: edit` to the active note's frontmatter |
+| **Clear view-mode** | Removes the `view-mode` key from the active note's frontmatter |
 
 ## Installation
 

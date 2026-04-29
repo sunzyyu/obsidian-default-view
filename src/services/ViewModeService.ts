@@ -3,20 +3,27 @@ import { VIEW_STATE_TYPE, ViewMode, PROCESSING_CLEANUP_DELAY_MS, VIEW_SWITCH_DEL
 import { FrontMatterService } from './FrontMatterService';
 
 interface VaultConfig {
-  getConfig(key: string): unknown;
+  getConfig(key: 'defaultViewMode'): unknown;
 }
 
 export class ViewModeService {
   private readonly processingPaths: Set<string> = new Set();
   private readonly app: App;
   private readonly frontMatterService: FrontMatterService;
+  private defaultView: ViewMode;
+  private lastObsidianDefaultView: ViewMode;
+  private isApplyingViewMode = false;
 
   public constructor(app: App, frontMatterService: FrontMatterService) {
     this.app = app;
     this.frontMatterService = frontMatterService;
+    this.defaultView = this.getObsidianDefaultView();
+    this.lastObsidianDefaultView = this.defaultView;
   }
 
-  public async handleFileOpen(file: TFile | null): Promise<void> {
+  public handleFileOpen(file: TFile | null): void {
+    this.syncObsidianDefaultView();
+
     if (!file) {
       return;
     }
@@ -25,7 +32,7 @@ export class ViewModeService {
       return;
     }
 
-    const desiredMode = this.frontMatterService.read(file) ?? this.getObsidianDefaultView();
+    const desiredMode = this.frontMatterService.read(file) ?? this.defaultView;
 
     const leaf = this.getActiveMarkdownLeaf();
     if (!leaf) {
@@ -39,16 +46,36 @@ export class ViewModeService {
     }
 
     // Delay to avoid conflicting with Obsidian's own state restoration
-    setTimeout(() => {
+    activeWindow.setTimeout(() => {
       this.switchToView(leaf, desiredMode);
     }, VIEW_SWITCH_DELAY_MS);
   }
 
   public markProcessing(path: string): void {
     this.processingPaths.add(path);
-    setTimeout(() => {
+    activeWindow.setTimeout(() => {
       this.processingPaths.delete(path);
     }, PROCESSING_CLEANUP_DELAY_MS);
+  }
+
+  public handleActiveLeafChange(): void {
+    this.syncObsidianDefaultView();
+  }
+
+  public handleLayoutChange(): void {
+    this.syncObsidianDefaultView();
+
+    if (this.isApplyingViewMode) {
+      return;
+    }
+
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const mode = view ? this.toViewMode(view.getMode()) : null;
+    if (!mode) {
+      return;
+    }
+
+    this.defaultView = mode;
   }
 
   public async setCurrentFileMode(mode: ViewMode): Promise<void> {
@@ -73,16 +100,25 @@ export class ViewModeService {
     this.processingPaths.clear();
   }
 
-  private async switchToView(leaf: WorkspaceLeaf, mode: ViewMode): Promise<void> {
+  private switchToView(leaf: WorkspaceLeaf, mode: ViewMode): void {
     const state = leaf.getViewState();
     const newMode = VIEW_STATE_TYPE[mode];
 
-    await leaf.setViewState(
+    this.isApplyingViewMode = true;
+    void leaf.setViewState(
       {
         ...state,
         state: { ...state.state, mode: newMode },
       },
       { history: false },
+    ).then(
+      () => {
+        this.clearApplyingViewMode();
+      },
+      (error) => {
+        console.warn('Default View Mode: failed to switch view mode', error);
+        this.clearApplyingViewMode();
+      },
     );
   }
 
@@ -97,6 +133,32 @@ export class ViewModeService {
 
   private getObsidianDefaultView(): ViewMode {
     const defaultMode = (this.app.vault as unknown as VaultConfig).getConfig('defaultViewMode');
-    return defaultMode === 'preview' ? ViewMode.Reading : ViewMode.Editing;
+    return defaultMode === 'preview' ? ViewMode.Read : ViewMode.Edit;
+  }
+
+  private syncObsidianDefaultView(): void {
+    const obsidianDefaultView = this.getObsidianDefaultView();
+    if (obsidianDefaultView === this.lastObsidianDefaultView) {
+      return;
+    }
+
+    this.lastObsidianDefaultView = obsidianDefaultView;
+    this.defaultView = obsidianDefaultView;
+  }
+
+  private toViewMode(mode: string): ViewMode | null {
+    if (mode === VIEW_STATE_TYPE[ViewMode.Read]) {
+      return ViewMode.Read;
+    }
+    if (mode === VIEW_STATE_TYPE[ViewMode.Edit]) {
+      return ViewMode.Edit;
+    }
+    return null;
+  }
+
+  private clearApplyingViewMode(): void {
+    activeWindow.setTimeout(() => {
+      this.isApplyingViewMode = false;
+    }, VIEW_SWITCH_DELAY_MS);
   }
 }

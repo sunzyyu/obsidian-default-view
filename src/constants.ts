@@ -3,13 +3,13 @@ export const PLUGIN_ID = 'default-view-mode';
 export const FRONTMATTER_KEY = 'view-mode';
 
 export enum ViewMode {
-  Reading = 'reading',
-  Editing = 'editing',
+  Read = 'read',
+  Edit = 'edit',
 }
 
 export const VIEW_STATE_TYPE: Record<ViewMode, string> = {
-  [ViewMode.Reading]: 'preview',
-  [ViewMode.Editing]: 'source',
+  [ViewMode.Read]: 'preview',
+  [ViewMode.Edit]: 'source',
 };
 
 export const PROCESSING_CLEANUP_DELAY_MS = 500;

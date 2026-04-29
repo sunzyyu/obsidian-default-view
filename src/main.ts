@@ -8,7 +8,7 @@ export default class DefaultViewPlugin extends Plugin {
   private frontMatterService!: FrontMatterService;
   private viewModeService!: ViewModeService;
 
-  public override async onload(): Promise<void> {
+  public override onload(): void {
     this.frontMatterService = new FrontMatterService(this.app);
     this.viewModeService = new ViewModeService(this.app, this.frontMatterService);
 
@@ -17,6 +17,18 @@ export default class DefaultViewPlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on('file-open', (file) => {
         this.viewModeService.handleFileOpen(file);
+      }),
+    );
+
+    this.registerEvent(
+      this.app.workspace.on('layout-change', () => {
+        this.viewModeService.handleLayoutChange();
+      }),
+    );
+
+    this.registerEvent(
+      this.app.workspace.on('active-leaf-change', () => {
+        this.viewModeService.handleActiveLeafChange();
       }),
     );
   }

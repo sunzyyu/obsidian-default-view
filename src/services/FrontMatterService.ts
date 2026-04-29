@@ -14,7 +14,7 @@ export class FrontMatterService {
       return null;
     }
     const value = metadata.frontmatter[FRONTMATTER_KEY];
-    if (value === ViewMode.Reading || value === ViewMode.Editing) {
+    if (value === ViewMode.Read || value === ViewMode.Edit) {
       return value;
     }
     return null;

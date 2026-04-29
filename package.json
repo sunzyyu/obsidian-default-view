@@ -1,7 +1,7 @@
 {
     "name": "default-view-mode",
-    "version": "1.0.2",
-    "description": "Set a default view mode (reading or editing) for each note via frontmatter.",
+    "version": "1.0.3",
+    "description": "Set a default view mode (read or edit) for each note via frontmatter.",
     "main": "main.js",
     "scripts": {
         "build": "node esbuild.config.mjs production",
@@ -11,7 +11,8 @@
         "obsidian",
         "obsidian-plugin",
         "view-mode",
-        "reading-view"
+        "read-view",
+        "edit-view"
     ],
     "license": "MIT",
     "devDependencies": {
