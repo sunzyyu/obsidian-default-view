@@ -15,12 +15,6 @@ export default class DefaultViewPlugin extends Plugin {
     registerCommands(this, this.viewModeService);
 
     this.registerEvent(
-      this.app.workspace.on('file-open', (file) => {
-        this.viewModeService.handleFileOpen(file);
-      }),
-    );
-
-    this.registerEvent(
       this.app.workspace.on('layout-change', () => {
         this.viewModeService.handleLayoutChange();
       }),
