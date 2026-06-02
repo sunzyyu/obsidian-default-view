@@ -14,6 +14,22 @@ interface ResolvedOpenState {
   usesFrontMatterMode: boolean;
 }
 
+function getWorkspaceLeafOpenFile(): WorkspaceLeafOpenFile {
+  const openFile: unknown = Reflect.get(WorkspaceLeaf.prototype, 'openFile');
+  if (typeof openFile !== 'function') {
+    throw new TypeError('WorkspaceLeaf.openFile is not a function');
+  }
+  return openFile as WorkspaceLeafOpenFile;
+}
+
+function getWorkspaceOpenLinkText(workspace: Workspace): WorkspaceOpenLinkText {
+  const openLinkText: unknown = Reflect.get(workspace, 'openLinkText');
+  if (typeof openLinkText !== 'function') {
+    throw new TypeError('Workspace.openLinkText is not a function');
+  }
+  return openLinkText as WorkspaceOpenLinkText;
+}
+
 export class ViewModeService {
   private readonly app: App;
   private readonly frontMatterService: FrontMatterService;
@@ -74,29 +90,35 @@ export class ViewModeService {
     this.isDisposed = true;
 
     // If another plugin wrapped after us, keep that chain intact and only disable our wrapper.
-    if (this.wrappedOpenFile && WorkspaceLeaf.prototype.openFile === this.wrappedOpenFile && this.originalOpenFile) {
+    if (this.wrappedOpenFile && getWorkspaceLeafOpenFile() === this.wrappedOpenFile && this.originalOpenFile) {
       WorkspaceLeaf.prototype.openFile = this.originalOpenFile;
     }
 
-    if (this.wrappedOpenLinkText && this.app.workspace.openLinkText === this.wrappedOpenLinkText && this.originalOpenLinkText) {
+    if (this.wrappedOpenLinkText && getWorkspaceOpenLinkText(this.app.workspace) === this.wrappedOpenLinkText && this.originalOpenLinkText) {
       this.app.workspace.openLinkText = this.originalOpenLinkText;
     }
   }
 
   private installOpenInterceptors(): void {
-    const service = this;
-    const originalOpenFile = WorkspaceLeaf.prototype.openFile;
-    const originalOpenLinkText = this.app.workspace.openLinkText;
+    const originalOpenFile = getWorkspaceLeafOpenFile();
+    const originalOpenLinkText = getWorkspaceOpenLinkText(this.app.workspace);
+    const isServiceDisposed = (): boolean => this.isDisposed;
+    const resolveOpenState = (file: TFile, openState?: OpenViewState): ResolvedOpenState =>
+      this.resolveOpenState(file, openState);
+    const resolveLinkFile = (linktext: string, sourcePath: string): TFile | null =>
+      this.resolveLinkFile(linktext, sourcePath);
+    const withApplyingViewMode = <T>(operation: () => Promise<T>): Promise<T> =>
+      this.withApplyingViewMode(operation);
 
     const wrappedOpenFile: WorkspaceLeafOpenFile = function (
       this: WorkspaceLeaf,
       file: TFile,
       openState?: OpenViewState,
     ): Promise<void> {
-      const resolved = service.isDisposed ? null : service.resolveOpenState(file, openState);
+      const resolved = isServiceDisposed() ? null : resolveOpenState(file, openState);
       const viewState = resolved?.openState ?? openState;
       const openFile = () => originalOpenFile.call(this, file, viewState);
-      return resolved?.usesFrontMatterMode ? service.withApplyingViewMode(openFile) : openFile();
+      return resolved?.usesFrontMatterMode ? withApplyingViewMode(openFile) : openFile();
     };
 
     const wrappedOpenLinkText: WorkspaceOpenLinkText = function (
@@ -106,11 +128,11 @@ export class ViewModeService {
       newLeaf?: PaneType | boolean,
       openViewState?: OpenViewState,
     ): Promise<void> {
-      const file = service.isDisposed ? null : service.resolveLinkFile(linktext, sourcePath);
-      const resolved = file ? service.resolveOpenState(file, openViewState) : null;
+      const file = isServiceDisposed() ? null : resolveLinkFile(linktext, sourcePath);
+      const resolved = file ? resolveOpenState(file, openViewState) : null;
       const viewState = resolved?.openState ?? openViewState;
       const openLinkText = () => originalOpenLinkText.call(this, linktext, sourcePath, newLeaf, viewState);
-      return resolved?.usesFrontMatterMode ? service.withApplyingViewMode(openLinkText) : openLinkText();
+      return resolved?.usesFrontMatterMode ? withApplyingViewMode(openLinkText) : openLinkText();
     };
 
     this.originalOpenFile = originalOpenFile;
